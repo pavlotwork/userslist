@@ -68,7 +68,7 @@ class DBmodel
     {
     	if($id == FALSE) return FALSE;
 
-    	if($role !== NULL) $set[] = "`".self::COLUMN_STATUS."` = '".$status."'";
+    	if($status !== NULL) $set[] = "`".self::COLUMN_STATUS."` = '".$status."'";
     	if($role !== FALSE) $set[] = "`".self::COLUMN_ROLE."` = '".$role."'";
     	if($name !== FALSE) $set[] = "`".self::COLUMN_NAME."` = '".$name."'";
 
