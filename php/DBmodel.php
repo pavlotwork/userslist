@@ -13,24 +13,27 @@ class DBmodel
     const COLUMN_ROLE = 'role';
     const COLUMN_NAME = 'name';
 
-    private function queryTheDatabase($query)
+    private function queryTheDatabase($query, $return_id = FALSE)
     {   
         $connection = new mysqli(self::DB_HOST,self::DB_USER,self::DB_PASS,self::DB_NAME);
         $result = $connection->query($query);
-        $id = mysqli_insert_id($connection);
+        
 
-        if(is_bool($result))
+        if($return_id == TRUE)
         {
-            $return = $result;
+           $data = mysqli_insert_id($connection);
+        }elseif(is_bool($result))
+        {
+            $data = $result;
         }else{
             while( $row = mysqli_fetch_array($result, MYSQLI_ASSOC) )
             {
-                $return[] = $row;
+                $data[] = $row;
             }
         }
 
         mysqli_close($connection);
-        return $return;
+        return $data;
     }
 
     public function get_users_data($id = FALSE)
@@ -61,7 +64,7 @@ class DBmodel
                         '".$name."'
                         )";
 
-        return $this->queryTheDatabase($query);
+        return $this->queryTheDatabase($query, TRUE);
     }
 
     public function update_user($id = FALSE, $role = FALSE, $name = FALSE, $status = NULL)
