@@ -16,6 +16,11 @@ class DBmodel
     private function queryTheDatabase($query, $return_id = FALSE)
     {   
         $connection = new mysqli(self::DB_HOST,self::DB_USER,self::DB_PASS,self::DB_NAME);
+        
+        if (!$connection->set_charset("utf8"))
+        {
+            printf("ERROR set_charset utf8: %s\n", $connection->error);
+        }
         $result = $connection->query($query);
         
 
@@ -43,7 +48,7 @@ class DBmodel
             $query = "SELECT * FROM `".self::TABLE_USERS."` WHERE `".self::COLUMN_ID."` = '".$id."'";
         }else
         {
-            $query = "SELECT * FROM `".self::TABLE_USERS."`";
+            $query = "SELECT * FROM `".self::TABLE_USERS."` ORDER BY `".self::COLUMN_ID."` ASC";
         }
 
         return $this->queryTheDatabase($query);

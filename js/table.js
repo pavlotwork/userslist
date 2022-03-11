@@ -54,7 +54,7 @@ function generate_row_html (id, name, role, status)
 				   '<td class="text-center align-middle">' +
 				    '<div class="btn-group align-top">' +
 				      '<button class="btn btn-sm btn-outline-secondary badge" type="button" data-toggle="modal" data-target="#user-form-modal" data-bs-userid="' + id + '">Edit</button>' +
-				      '<button class="btn btn-sm btn-outline-secondary badge" type="button" onclick="confirm_delete_user(\'' + id + '\', \'' + name + '\')"><i class="fa fa-trash"></i></button>' +
+				      '<button class="btn btn-sm btn-outline-secondary badge" type="button" onclick="confirm_modal(\'' + id + '\', \'' + name + '\', false)"><i class="fa fa-trash"></i></button>' +
 				    '</div>' +
 				  '</td>';
 		return html;
@@ -80,11 +80,19 @@ function remove_row_from_table(id)
 
 function update_user_modal_form(user_id)
 {
+	$('#alert-role-select').hide();
+	$('#role').change(function()
+	{
+	  $('#alert-role-select').hide();
+	});
+
+
 	$('#update_user_id').val(user_id);
 
 	if(user_id != 'adduser')
 	{
 		$('#user-edit-modal-title').text('Edit user');
+		$('#user-form-modal-button').text('Save changes');
 
 		$.ajax
 		(
@@ -124,18 +132,12 @@ function update_user_modal_form(user_id)
 	}else
 	{
 		$('#user-edit-modal-title').text('Add user');
+		$('#user-form-modal-button').text('Add user');
 		$('#first_name').val('');
 		$('#last_name').val('');
 		$('#status').bootstrapToggle('off');
 		$('#role').val(0);
 	}
-}
-
-function confirm_delete_user(user_id, user_name)
-{
-	$('#modal-confirm-delete-user-message').text('Delete user - ' + user_name);
-	$('#delete-user-id').val(user_id);
-	$('#modal-confirm-delete-user').modal('show');
 }
 
 function delete_user()
@@ -176,8 +178,7 @@ function add_update_user()
 {
 	if ($('#role').val() == 0)
 	{
-		$('#modal-notification-message').text('Please select action!');
-		$('#modal-notification').modal('show');
+		$('#alert-role-select').show();
 		return;
 	}
 
@@ -231,9 +232,40 @@ function indiv_checkbox_change()
 	}
 }
 
+function confirm_action()
+{
+	if($('#mass-action-select-id').val() != 'false')
+	{
+		mass_action($('#mass-action-select-id').val());
+	}else if($('#delete-user-id').val() != 'false')
+	{
+		delete_user();
+	}
+	$('#modal-confirm-delete-user').modal('hide');
+}
+
+function confirm_modal(user_id = false, user_name = false, select_id = false)
+{
+	$('#delete-user-id').val(user_id);
+	$('#mass-action-select-id').val(select_id);
+	
+	if (select_id != false & $('#'+select_id).val() == 3)
+	{
+		$('#modal-confirm-delete-user-message').text('Delete selected users?');
+		$('#modal-confirm-delete-user').modal('show');
+	}else if(user_id != false)
+	{
+		
+		$('#modal-confirm-delete-user-message').text('Delete user - ' + user_name + '?');
+		$('#modal-confirm-delete-user').modal('show');
+	}else
+	{
+		mass_action(select_id);
+	}	
+}
+
 function mass_action(select_id)
 {
-
 	if ($('#'+select_id).val() == 0)
 	{
 		$('#modal-notification-message').text('Please select action!');
